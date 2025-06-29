@@ -15,8 +15,12 @@ import { useState } from 'react'
 import { ProductoList } from './components/ProductoList'
 import { ProductoForm } from './components/ProductoForm'
 import { BuscarProducto } from './components/BuscarProducto'
+import { CommandPalette } from './components/CommandPalette'
+import { ThemeToggle } from './components/ThemeToggle'
 import { Logo } from './components/Logo'
-import { Package, Plus, Search } from 'lucide-react'
+import { Package, Plus, Search, Command } from 'lucide-react'
+import { Toaster } from '@/components/ui/toaster'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 
 /**
@@ -35,93 +39,83 @@ const queryClient = new QueryClient({
   },
 })
 
-/**
- * TIPOS PARA NAVEGACIÓN
- * 
- * Define las vistas disponibles en la aplicación:
- * - 'list': Lista de todos los productos
- * - 'create': Formulario para agregar producto nuevo
- * - 'search': Búsqueda de productos por nombre
- */
-type View = 'list' | 'create' | 'search'
-
 function App() {
-  // Estado para controlar qué vista está activa
-  const [currentView, setCurrentView] = useState<View>('list')
-
-  /**
-   * RENDERIZADO CONDICIONAL DE VISTAS
-   * 
-   * Función que determina qué componente mostrar según la vista activa.
-   * Cada vista maneja su propia lógica y estado interno.
-   */
-  const renderView = () => {
-    switch (currentView) {
-      case 'create':
-        // Formulario con callback para volver a lista después de crear
-        return <ProductoForm onSuccess={() => setCurrentView('list')} />
-      case 'search':
-        // Componente de búsqueda independiente
-        return <BuscarProducto />
-      default:
-        // Vista por defecto: lista completa de productos
-        return <ProductoList />
-    }
-  }
+  const [commandOpen, setCommandOpen] = useState(false)
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b">
+        <header className="bg-card shadow-sm border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center">
                 <Logo className="mr-3" size="md" />
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-xl font-bold text-foreground">
                   Verificador de Precios
                 </h1>
               </div>
               
-              {/* Navigation con shadcn/ui Buttons */}
-              <nav className="flex space-x-2">
+              {/* Controles del header */}
+              <div className="flex items-center gap-3">
+                <ThemeToggle />
                 <Button
-                  variant={currentView === 'list' ? 'default' : 'ghost'}
+                  variant="outline"
                   size="sm"
-                  onClick={() => setCurrentView('list')}
+                  onClick={() => setCommandOpen(true)}
                   className="flex items-center gap-2"
                 >
-                  <Package className="h-4 w-4" />
-                  Productos
+                  <Command className="h-4 w-4" />
+                  Búsqueda rápida
+                  <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                    Ctrl+K
+                  </kbd>
                 </Button>
-                <Button
-                  variant={currentView === 'search' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setCurrentView('search')}
-                  className="flex items-center gap-2"
-                >
-                  <Search className="h-4 w-4" />
-                  Buscar
-                </Button>
-                <Button
-                  variant={currentView === 'create' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setCurrentView('create')}
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Agregar
-                </Button>
-              </nav>
+              </div>
             </div>
           </div>
         </header>
 
-        {/* Main Content */}
+        {/* Main Content with Tabs */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {renderView()}
+          <Tabs defaultValue="list" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="list" className="flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Productos
+              </TabsTrigger>
+              <TabsTrigger value="search" className="flex items-center gap-2">
+                <Search className="h-4 w-4" />
+                Buscar
+              </TabsTrigger>
+              <TabsTrigger value="create" className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Agregar
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="list">
+              <ProductoList />
+            </TabsContent>
+            
+            <TabsContent value="search">
+              <BuscarProducto />
+            </TabsContent>
+            
+            <TabsContent value="create">
+              <ProductoForm onSuccess={() => {
+                // Cambiar a la tab de productos después de crear
+                const listTab = document.querySelector('[value="list"]') as HTMLElement;
+                listTab?.click();
+              }} />
+            </TabsContent>
+          </Tabs>
         </main>
       </div>
+      
+      {/* Command Palette */}
+      <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+      <Toaster />
     </QueryClientProvider>
   )
 }
