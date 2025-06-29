@@ -50,7 +50,6 @@ export const ProductoForm = ({ producto, onSuccess, onCancel }: ProductoFormProp
     formState: { errors, isSubmitting },
     reset,
     setValue,
-    watch,
   } = useForm<ProductoInput>({
     resolver: zodResolver(productoSchema),
     defaultValues: producto ? {
