@@ -7,6 +7,7 @@
 import { useState } from 'react'
 import { useProductos, useDeleteProducto } from '../hooks/useProductos'
 import { ProductoForm } from './ProductoForm'
+import { ProductImage } from './ProductImage'
 import { Edit, Trash2, ShoppingCart, AlertCircle } from 'lucide-react'
 import type { Producto } from '../types'
 import { Button } from '@/components/ui/button'
@@ -75,7 +76,12 @@ export const ProductoList = () => {
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <Card key={i}>
+            <Card key={i} className="overflow-hidden">
+              {/* Skeleton para imagen */}
+              <div className="aspect-square w-full bg-muted">
+                <Skeleton className="h-full w-full" />
+              </div>
+              
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <Skeleton className="h-6 w-3/4" />
@@ -158,7 +164,16 @@ export const ProductoList = () => {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {productos?.map((producto) => (
-            <Card key={producto._id}>
+            <Card key={producto._id} className="overflow-hidden">
+              {/* Imagen del producto */}
+              <div className="aspect-square w-full overflow-hidden bg-muted">
+                <ProductImage
+                  src={producto.imagen}
+                  alt={producto.nombre}
+                  className="h-full w-full object-cover transition-transform hover:scale-105"
+                />
+              </div>
+              
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-lg truncate">
