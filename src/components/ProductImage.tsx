@@ -8,6 +8,7 @@
  * - Estados de carga y error mejorados
  * - Animaciones suaves
  * - Mejor accesibilidad
+ * - Sin imports no utilizados
  */
 
 import { useState } from 'react'
