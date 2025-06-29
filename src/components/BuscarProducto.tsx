@@ -1,7 +1,18 @@
+/**
+ * ============================================
+ * COMPONENTE BUSCAR PRODUCTO (REDISEÑADO CON SHADCN/UI)
+ * ============================================
+ */
+
 import { useState } from 'react'
 import { useSearchProductos } from '../hooks/useProductos'
-import { Search, Package, AlertCircle } from 'lucide-react'
+import { Search, Package, AlertCircle, Loader2 } from 'lucide-react'
 import type { Producto } from '../types'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export const BuscarProducto = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -20,64 +31,61 @@ export const BuscarProducto = () => {
     return ((precioPublico - precioCompra) / precioCompra * 100).toFixed(1)
   }
 
-  const getStockColor = (cantidad: number) => {
-    if (cantidad === 0) return 'text-red-600 bg-red-50'
-    if (cantidad <= 5) return 'text-yellow-600 bg-yellow-50'
-    return 'text-green-600 bg-green-50'
+  const getStockVariant = (cantidad: number) => {
+    if (cantidad === 0) return 'destructive'
+    if (cantidad <= 5) return 'secondary'
+    return 'default'
   }
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Buscar Productos</h2>
-        
-        <form onSubmit={handleSearch} className="flex gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar productos por nombre (ej: coca, pan, leche...)"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isLoading || !searchTerm.trim()}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Search className="h-4 w-4 inline mr-2" />
-            Buscar
-          </button>
-        </form>
-      </div>
-
-      {/* Loading State */}
-      {isLoading && (
-        <div className="flex justify-center items-center h-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-2 text-gray-600">Buscando productos...</span>
-        </div>
-      )}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Buscar Productos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSearch} className="flex gap-4">
+            <div className="flex-1">
+              <Input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Buscar productos por nombre (ej: coca, pan, leche...)"
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={isLoading || !searchTerm.trim()}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4 mr-2" />
+              )}
+              Buscar
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       {/* Error State */}
       {error && (
-        <div className="flex items-center p-4 bg-red-50 border border-red-200 rounded-md">
-          <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-          <span className="text-red-700">
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
             Error al buscar productos. Intenta nuevamente.
-          </span>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
 
       {/* Results */}
       {!isLoading && !error && searchQuery && (
         <div>
-          <div className="mb-4">
-            <h3 className="text-lg font-medium text-gray-900">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-foreground">
               Resultados de búsqueda para "{searchQuery}"
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {productos.length === 0 
                 ? 'No se encontraron productos' 
                 : `${productos.length} producto${productos.length !== 1 ? 's' : ''} encontrado${productos.length !== 1 ? 's' : ''}`
@@ -86,68 +94,71 @@ export const BuscarProducto = () => {
           </div>
 
           {productos.length === 0 ? (
-            <div className="text-center py-12">
-              <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">
-                No se encontraron productos que coincidan con tu búsqueda.
-              </p>
-              <p className="text-sm text-gray-400 mt-2">
-                Intenta con un término diferente o revisa la ortografía.
-              </p>
-            </div>
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Package className="h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-muted-foreground mb-2">
+                  No se encontraron productos que coincidan con tu búsqueda.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Intenta con un término diferente o revisa la ortografía.
+                </p>
+              </CardContent>
+            </Card>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {productos.map((producto: Producto) => (
-                <div key={producto._id} className="card">
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-semibold text-gray-900 text-lg">
+                <Card key={producto._id}>
+                  <CardHeader>
+                    <CardTitle className="text-lg">
                       {producto.nombre}
-                    </h3>
-                  </div>
-                  
-                  <p className="text-gray-600 text-sm mb-3">
-                    {producto.descripcion}
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Precio Público:</span>
-                      <span className="font-medium text-green-600">
-                        ${producto.precioPublico.toFixed(2)}
-                      </span>
-                    </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      {producto.descripcion}
+                    </p>
                     
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Precio Compra:</span>
-                      <span className="font-medium">
-                        ${producto.precioCompra.toFixed(2)}
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Margen:</span>
-                      <span className="font-medium text-blue-600">
-                        {calculateMargin(producto.precioPublico, producto.precioCompra)}%
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-500">Stock:</span>
-                      <span className={`font-medium px-2 py-1 rounded-full text-xs ${getStockColor(producto.cantidad)}`}>
-                        {producto.cantidad} unidades
-                      </span>
-                    </div>
-                    
-                    <div className="pt-2 border-t border-gray-100">
+                    <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-xs text-gray-400">Código:</span>
-                        <span className="text-xs font-mono text-gray-600">
-                          {producto.codigoBarra}
+                        <span className="text-sm text-muted-foreground">Precio Público:</span>
+                        <span className="font-medium text-green-600">
+                          ${producto.precioPublico.toFixed(2)}
                         </span>
                       </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Precio Compra:</span>
+                        <span className="font-medium">
+                          ${producto.precioCompra.toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Margen:</span>
+                        <span className="font-medium text-blue-600">
+                          {calculateMargin(producto.precioPublico, producto.precioCompra)}%
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Stock:</span>
+                        <Badge variant={getStockVariant(producto.cantidad)}>
+                          {producto.cantidad} unidades
+                        </Badge>
+                      </div>
+                      
+                      <div className="pt-2 border-t border-border">
+                        <div className="flex justify-between">
+                          <span className="text-xs text-muted-foreground">Código:</span>
+                          <span className="text-xs font-mono text-muted-foreground">
+                            {producto.codigoBarra}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
@@ -156,15 +167,17 @@ export const BuscarProducto = () => {
 
       {/* Initial State */}
       {!searchQuery && (
-        <div className="text-center py-12">
-          <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500 mb-2">
-            Ingresa el nombre de un producto para buscar
-          </p>
-          <p className="text-sm text-gray-400">
-            Ejemplos: "coca", "pan", "leche", etc.
-          </p>
-        </div>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <Search className="h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-muted-foreground mb-2">
+              Ingresa el nombre de un producto para buscar
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Ejemplos: "coca", "pan", "leche", etc.
+            </p>
+          </CardContent>
+        </Card>
       )}
     </div>
   )

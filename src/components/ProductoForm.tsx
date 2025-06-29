@@ -1,9 +1,20 @@
+/**
+ * ============================================
+ * COMPONENTE FORMULARIO DE PRODUCTO (REDISEÑADO CON SHADCN/UI)
+ * ============================================
+ */
+
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateProducto, useUpdateProducto } from '../hooks/useProductos'
 import { Save, X } from 'lucide-react'
 import type { Producto, ProductoInput } from '../types'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 const productoSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido'),
@@ -61,138 +72,131 @@ export const ProductoForm = ({ producto, onSuccess, onCancel }: ProductoFormProp
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white shadow-md rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+      <Card>
+        <CardHeader>
+          <CardTitle>
             {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
-          </h2>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="px-6 py-4 space-y-6">
-          <div>
-            <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
-              Nombre del Producto
-            </label>
-            <input
-              type="text"
-              id="nombre"
-              {...register('nombre')}
-              className="input-field"
-              placeholder="Ej: Coca Cola 600ml"
-            />
-            {errors.nombre && (
-              <p className="mt-1 text-sm text-red-600">{errors.nombre.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="precioPublico" className="block text-sm font-medium text-gray-700 mb-2">
-                Precio Público
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                id="precioPublico"
-                {...register('precioPublico', { valueAsNumber: true })}
-                className="input-field"
-                placeholder="0.00"
-              />
-              {errors.precioPublico && (
-                <p className="mt-1 text-sm text-red-600">{errors.precioPublico.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="precioCompra" className="block text-sm font-medium text-gray-700 mb-2">
-                Precio de Compra
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                id="precioCompra"
-                {...register('precioCompra', { valueAsNumber: true })}
-                className="input-field"
-                placeholder="0.00"
-              />
-              {errors.precioCompra && (
-                <p className="mt-1 text-sm text-red-600">{errors.precioCompra.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
-              Descripción
-            </label>
-            <textarea
-              id="descripcion"
-              rows={3}
-              {...register('descripcion')}
-              className="input-field"
-              placeholder="Descripción del producto..."
-            />
-            {errors.descripcion && (
-              <p className="mt-1 text-sm text-red-600">{errors.descripcion.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="codigoBarra" className="block text-sm font-medium text-gray-700 mb-2">
-                Código de Barras
-              </label>
-              <input
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Nombre del producto */}
+            <div className="space-y-2">
+              <Label htmlFor="nombre">Nombre del Producto</Label>
+              <Input
+                id="nombre"
                 type="text"
-                id="codigoBarra"
-                {...register('codigoBarra')}
-                className="input-field"
-                placeholder="7501055362011"
+                placeholder="Ej: Coca Cola 600ml"
+                {...register('nombre')}
               />
-              {errors.codigoBarra && (
-                <p className="mt-1 text-sm text-red-600">{errors.codigoBarra.message}</p>
+              {errors.nombre && (
+                <Alert variant="destructive">
+                  <AlertDescription>{errors.nombre.message}</AlertDescription>
+                </Alert>
               )}
             </div>
 
-            <div>
-              <label htmlFor="cantidad" className="block text-sm font-medium text-gray-700 mb-2">
-                Cantidad
-              </label>
-              <input
-                type="number"
-                id="cantidad"
-                {...register('cantidad', { valueAsNumber: true })}
-                className="input-field"
-                placeholder="0"
+            {/* Precios */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="precioPublico">Precio Público</Label>
+                <Input
+                  id="precioPublico"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  {...register('precioPublico', { valueAsNumber: true })}
+                />
+                {errors.precioPublico && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{errors.precioPublico.message}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="precioCompra">Precio de Compra</Label>
+                <Input
+                  id="precioCompra"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  {...register('precioCompra', { valueAsNumber: true })}
+                />
+                {errors.precioCompra && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{errors.precioCompra.message}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </div>
+
+            {/* Descripción */}
+            <div className="space-y-2">
+              <Label htmlFor="descripcion">Descripción</Label>
+              <textarea
+                id="descripcion"
+                rows={3}
+                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="Descripción del producto..."
+                {...register('descripcion')}
               />
-              {errors.cantidad && (
-                <p className="mt-1 text-sm text-red-600">{errors.cantidad.message}</p>
+              {errors.descripcion && (
+                <Alert variant="destructive">
+                  <AlertDescription>{errors.descripcion.message}</AlertDescription>
+                </Alert>
               )}
             </div>
-          </div>
 
-          <div className="flex justify-end space-x-4 pt-4">
-            {onCancel && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-              >
-                <X className="h-4 w-4 inline mr-2" />
-                Cancelar
-              </button>
-            )}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              <Save className="h-4 w-4 inline mr-2" />
-              {isSubmitting ? 'Guardando...' : 'Guardar'}
-            </button>
-          </div>
-        </form>
-      </div>
+            {/* Código de barras y cantidad */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="codigoBarra">Código de Barras</Label>
+                <Input
+                  id="codigoBarra"
+                  type="text"
+                  placeholder="7501055362011"
+                  {...register('codigoBarra')}
+                />
+                {errors.codigoBarra && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{errors.codigoBarra.message}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cantidad">Cantidad</Label>
+                <Input
+                  id="cantidad"
+                  type="number"
+                  placeholder="0"
+                  {...register('cantidad', { valueAsNumber: true })}
+                />
+                {errors.cantidad && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{errors.cantidad.message}</AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </div>
+
+            {/* Botones */}
+            <div className="flex justify-end space-x-2 pt-4">
+              {onCancel && (
+                <Button type="button" variant="outline" onClick={onCancel}>
+                  <X className="h-4 w-4 mr-2" />
+                  Cancelar
+                </Button>
+              )}
+              <Button type="submit" disabled={isSubmitting}>
+                <Save className="h-4 w-4 mr-2" />
+                {isSubmitting ? 'Guardando...' : 'Guardar'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }
