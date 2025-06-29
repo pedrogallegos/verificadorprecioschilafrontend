@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useToast } from '@/hooks/use-toast'
 
 const productoSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido'),
@@ -35,6 +36,7 @@ export const ProductoForm = ({ producto, onSuccess, onCancel }: ProductoFormProp
   const createProducto = useCreateProducto()
   const updateProducto = useUpdateProducto()
   const isEditing = !!producto
+  const { toast } = useToast()
 
   const {
     register,
@@ -60,13 +62,26 @@ export const ProductoForm = ({ producto, onSuccess, onCancel }: ProductoFormProp
           identifier: producto._id,
           data,
         })
+        toast({
+          title: "✅ Producto actualizado",
+          description: `${data.nombre} ha sido actualizado exitosamente.`,
+        })
       } else {
         await createProducto.mutateAsync(data)
+        toast({
+          title: "✅ Producto creado",
+          description: `${data.nombre} ha sido agregado al inventario.`,
+        })
         reset()
       }
       onSuccess?.()
     } catch (error) {
       console.error('Error al guardar producto:', error)
+      toast({
+        variant: "destructive",
+        title: "❌ Error",
+        description: "No se pudo guardar el producto. Intenta nuevamente.",
+      })
     }
   }
 
