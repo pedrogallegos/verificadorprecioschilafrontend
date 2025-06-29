@@ -1,5 +1,10 @@
 /**
- * ============================================
+ * ====================================  // Si no hay imagen o hay error, mostrar placeholder
+  if (!src || imageError) {
+    return (
+      <div className={`${sizeClasses[size]} ${className} bg-muted rounded-lg flex items-center justify-center border border-border`}>
+        <Package className="h-8 w-8 text-muted-foreground" />
+      </div>==
  * COMPONENTE PRODUCT IMAGE - DISPLAY
  * ============================================
  */
