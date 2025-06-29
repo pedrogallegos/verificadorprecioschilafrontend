@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react'
 import { useProductos } from '../hooks/useProductos'
-import { Search, Package, Zap } from 'lucide-react'
+import { Package, Zap } from 'lucide-react'
 import type { Producto } from '../types'
 import {
   Command,
