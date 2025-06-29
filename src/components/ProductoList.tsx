@@ -1,18 +1,41 @@
+/**
+ * ============================================
+ * COMPONENTE LISTA DE PRODUCTOS (REDISEÑADO CON SHADCN/UI)
+ * ============================================
+ */
+
 import { useState } from 'react'
 import { useProductos, useDeleteProducto } from '../hooks/useProductos'
 import { ProductoForm } from './ProductoForm'
-import { Edit, Trash2, ShoppingCart, AlertCircle } from 'lucide-react'
+import { Edit, Trash2, ShoppingCart, AlertCircle, Loader2 } from 'lucide-react'
 import type { Producto } from '../types'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 export const ProductoList = () => {
   const { data: productos, isLoading, error } = useProductos()
   const deleteProducto = useDeleteProducto()
   const [editingProducto, setEditingProducto] = useState<Producto | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<string | null>(null)
 
-  const handleDelete = async (identifier: string) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+  const handleDeleteConfirm = async () => {
+    if (productToDelete) {
       try {
-        await deleteProducto.mutateAsync(identifier)
+        await deleteProducto.mutateAsync(productToDelete)
+        setDeleteDialogOpen(false)
+        setProductToDelete(null)
       } catch (error) {
         console.error('Error al eliminar producto:', error)
       }
@@ -23,21 +46,31 @@ export const ProductoList = () => {
     return ((precioPublico - precioCompra) / precioCompra * 100).toFixed(1)
   }
 
+  const getStockVariant = (cantidad: number) => {
+    if (cantidad === 0) return 'destructive'
+    if (cantidad < 10) return 'secondary'
+    return 'default'
+  }
+
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
+      <Card>
+        <CardContent className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin mr-2" />
+          <span>Cargando productos...</span>
+        </CardContent>
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Error al cargar productos</h3>
-        <p className="text-gray-500">Por favor, intenta de nuevo más tarde.</p>
-      </div>
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Error al cargar productos. Por favor, intenta de nuevo más tarde.
+        </AlertDescription>
+      </Alert>
     )
   }
 
@@ -53,85 +86,111 @@ export const ProductoList = () => {
 
   return (
     <div>
-      <div className="sm:flex sm:items-center mb-6">
-        <div className="sm:flex-auto">
-          <h2 className="text-2xl font-bold leading-6 text-gray-900">Productos</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Lista de todos los productos en el inventario.
-          </p>
-        </div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold leading-6 text-foreground">Productos</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Lista de todos los productos en el inventario.
+        </p>
       </div>
 
       {productos && productos.length === 0 ? (
-        <div className="text-center py-12">
-          <ShoppingCart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No hay productos</h3>
-          <p className="text-gray-500">Comienza agregando tu primer producto.</p>
-        </div>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <ShoppingCart className="h-12 w-12 text-muted-foreground mb-4" />
+            <CardTitle className="mb-2">No hay productos</CardTitle>
+            <p className="text-muted-foreground">Comienza agregando tu primer producto.</p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {productos?.map((producto) => (
-            <div key={producto._id} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 truncate">
-                  {producto.nombre}
-                </h3>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => setEditingProducto(producto)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(producto._id)}
-                    className="text-red-600 hover:text-red-800"
-                    disabled={deleteProducto.isPending}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+            <Card key={producto._id}>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-lg truncate">
+                    {producto.nombre}
+                  </CardTitle>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditingProducto(producto)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setProductToDelete(producto._id)
+                            setDeleteDialogOpen(true)
+                          }}
+                          disabled={deleteProducto.isPending}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>¿Eliminar producto?</DialogTitle>
+                          <DialogDescription>
+                            ¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+                            Cancelar
+                          </Button>
+                          <Button variant="destructive" onClick={handleDeleteConfirm}>
+                            Eliminar
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </div>
-              </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                  {producto.descripcion}
+                </p>
 
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                {producto.descripcion}
-              </p>
-
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Precio Público:</span>
-                  <span className="font-medium text-green-600">
-                    ${producto.precioPublico.toFixed(2)}
-                  </span>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Precio Público:</span>
+                    <span className="font-medium text-green-600">
+                      ${producto.precioPublico.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Precio Compra:</span>
+                    <span className="font-medium">
+                      ${producto.precioCompra.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Margen:</span>
+                    <span className="font-medium text-blue-600">
+                      {calculateMargin(producto.precioPublico, producto.precioCompra)}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Stock:</span>
+                    <Badge variant={getStockVariant(producto.cantidad)}>
+                      {producto.cantidad} unidades
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Código:</span>
+                    <span className="font-mono text-sm">
+                      {producto.codigoBarra}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Precio Compra:</span>
-                  <span className="font-medium text-gray-900">
-                    ${producto.precioCompra.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Margen:</span>
-                  <span className="font-medium text-blue-600">
-                    {calculateMargin(producto.precioPublico, producto.precioCompra)}%
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Cantidad:</span>
-                  <span className={`font-medium ${
-                    producto.cantidad < 10 ? 'text-red-600' : 'text-gray-900'
-                  }`}>
-                    {producto.cantidad}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Código:</span>
-                  <span className="font-mono text-sm text-gray-900">
-                    {producto.codigoBarra}
-                  </span>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
