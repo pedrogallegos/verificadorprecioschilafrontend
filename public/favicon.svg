@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <defs>
     <style>
-      :root { color: #2563eb; }
+      :root { color: #10b981; }
       @media (prefers-color-scheme: dark) {
-        :root { color: #60a5fa; }
+        :root { color: #10b981; }
       }
     </style>
   </defs>
