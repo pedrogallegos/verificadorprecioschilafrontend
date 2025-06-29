@@ -1,0 +1,7 @@
+# Archivo para Netlify (alternativa de deployment)
+# En caso de querer usar Netlify en lugar de Railway
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
