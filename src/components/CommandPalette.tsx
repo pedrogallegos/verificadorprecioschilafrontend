@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react'
 import { useProductos } from '../hooks/useProductos'
-import { Package, Zap } from 'lucide-react'
+import { Package, Scan } from 'lucide-react'
 import type { Producto } from '../types'
 import {
   Command,
@@ -66,7 +66,7 @@ export const CommandPalette = ({ open, onOpenChange }: CommandPaletteProps) => {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5" />
+              <Scan className="h-5 w-5" />
               Búsqueda Rápida
             </DialogTitle>
             <DialogDescription>
