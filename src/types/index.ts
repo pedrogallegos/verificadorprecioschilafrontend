@@ -6,6 +6,7 @@ export interface Producto {
   descripcion: string
   codigoBarra: string
   cantidad: number
+  imagen?: string
   createdAt: string
   updatedAt: string
 }
@@ -17,6 +18,7 @@ export interface ProductoInput {
   descripcion: string
   codigoBarra: string
   cantidad: number
+  imagen?: string
 }
 
 export interface ApiResponse<T> {

@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { ProductImage } from './ProductImage'
 
 export const BuscarProducto = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -110,15 +111,25 @@ export const BuscarProducto = () => {
               {productos.map((producto: Producto) => (
                 <Card key={producto._id}>
                   <CardHeader>
-                    <CardTitle className="text-lg">
-                      {producto.nombre}
-                    </CardTitle>
+                    <div className="flex items-start gap-4">
+                      <ProductImage
+                        src={producto.imagen}
+                        alt={producto.nombre}
+                        size="small"
+                        showModal={true}
+                        className="flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-lg truncate">
+                          {producto.nombre}
+                        </CardTitle>
+                        <p className="text-muted-foreground text-sm mt-1">
+                          {producto.descripcion}
+                        </p>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      {producto.descripcion}
-                    </p>
-                    
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-sm text-muted-foreground">Precio Público:</span>
