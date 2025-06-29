@@ -7,6 +7,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useState } from 'react'
 import { useCreateProducto, useUpdateProducto } from '../hooks/useProductos'
 import { Save, X } from 'lucide-react'
 import type { Producto, ProductoInput } from '../types'
@@ -16,6 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useToast } from '@/hooks/use-toast'
+import { ImageUpload } from './ImageUpload'
 
 const productoSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido'),
@@ -24,6 +26,7 @@ const productoSchema = z.object({
   descripcion: z.string().min(1, 'La descripción es requerida'),
   codigoBarra: z.string().min(1, 'El código de barras es requerido'),
   cantidad: z.number().min(1, 'La cantidad debe ser mayor a 0'),
+  imagen: z.string().optional(), // Campo de imagen opcional
 })
 
 interface ProductoFormProps {
@@ -37,12 +40,17 @@ export const ProductoForm = ({ producto, onSuccess, onCancel }: ProductoFormProp
   const updateProducto = useUpdateProducto()
   const isEditing = !!producto
   const { toast } = useToast()
+  
+  // Estado para la imagen
+  const [imageUrl, setImageUrl] = useState<string>(producto?.imagen || '')
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
+    watch,
   } = useForm<ProductoInput>({
     resolver: zodResolver(productoSchema),
     defaultValues: producto ? {
@@ -52,8 +60,22 @@ export const ProductoForm = ({ producto, onSuccess, onCancel }: ProductoFormProp
       descripcion: producto.descripcion,
       codigoBarra: producto.codigoBarra,
       cantidad: producto.cantidad,
-    } : undefined,
+      imagen: producto.imagen || '',
+    } : {
+      imagen: '',
+    },
   })
+
+  // Funciones para manejar la imagen
+  const handleImageUpload = (url: string) => {
+    setImageUrl(url)
+    setValue('imagen', url)
+  }
+
+  const handleImageRemove = () => {
+    setImageUrl('')
+    setValue('imagen', '')
+  }
 
   const onSubmit = async (data: ProductoInput) => {
     try {
@@ -95,6 +117,19 @@ export const ProductoForm = ({ producto, onSuccess, onCancel }: ProductoFormProp
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Imagen del producto */}
+            <div className="space-y-2">
+              <Label>Imagen del Producto</Label>
+              <ImageUpload
+                onImageUpload={handleImageUpload}
+                currentImage={imageUrl}
+                onImageRemove={handleImageRemove}
+              />
+              <p className="text-xs text-muted-foreground">
+                Sube una imagen del producto para una mejor identificación visual
+              </p>
+            </div>
+
             {/* Nombre del producto */}
             <div className="space-y-2">
               <Label htmlFor="nombre">Nombre del Producto</Label>
