@@ -11,7 +11,7 @@
  */
 
 import { useState } from 'react'
-import { Package, ImageIcon, Loader2 } from 'lucide-react'
+import { Package, Loader2 } from 'lucide-react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 
 interface ProductImageProps {
