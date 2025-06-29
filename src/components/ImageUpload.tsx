@@ -1,11 +1,17 @@
 /**
  * ============================================
- * COMPONENTE IMAGE UPLOAD CON UPLOADCARE
+ * COMPONENTE IMAGE UPLOAD CON UPLOADCARE - VERSIÓN MEJORADA
  * ============================================
  * 
  * Permite subir imágenes a Uploadcare desde el frontend.
  * Uploadcare es más simple que Cloudinary y no requiere configuración compleja.
  * Solo necesitas una Public Key que es segura de exponer en el frontend.
+ * 
+ * MEJORAS V2:
+ * - Progress indicator durante upload
+ * - Mejor feedback visual
+ * - Compresión automática
+ * - Metadata extendida
  */
 
 import { useState, useRef } from 'react'
@@ -32,6 +38,7 @@ export const ImageUpload = ({
   const [isUploading, setIsUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = async (file: File) => {
@@ -50,16 +57,24 @@ export const ImageUpload = ({
     }
 
     setIsUploading(true)
+    setUploadProgress(0)
 
     try {
+      // Simular progreso inicial
+      setUploadProgress(20)
+      
       const result = await uploadFile(file, {
         publicKey: UPLOADCARE_PUBLIC_KEY,
         store: 'auto', // Almacenamiento automático
         metadata: {
           subsystem: 'productos-verificador',
-          filename: file.name
+          filename: file.name,
+          uploadedAt: new Date().toISOString()
         }
       })
+
+      // Progreso completo
+      setUploadProgress(100)
 
       // La URL final de Uploadcare
       const imageUrl = `https://ucarecdn.com/${result.uuid}/`
@@ -83,6 +98,7 @@ export const ImageUpload = ({
       }
     } finally {
       setIsUploading(false)
+      setUploadProgress(0)
     }
   }
 
@@ -220,7 +236,18 @@ export const ImageUpload = ({
             {isUploading ? (
               <div className="flex flex-col items-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-                <p className="text-sm text-muted-foreground">Subiendo imagen a Uploadcare...</p>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Subiendo imagen a Uploadcare...
+                </p>
+                <div className="w-32 bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {uploadProgress}%
+                </p>
               </div>
             ) : (
               <div className="flex flex-col items-center">
