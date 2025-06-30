@@ -8,12 +8,12 @@ import { useState } from 'react'
 import { useSearchProductos } from '../hooks/useProductos'
 import { Search, Package, AlertCircle, Loader2 } from 'lucide-react'
 import type { Producto } from '../types'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ProductImage } from './ProductImage'
+import { Button } from '@/components/ui/button'
 
 export const BuscarProducto = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -57,6 +57,7 @@ export const BuscarProducto = () => {
             <Button
               type="submit"
               disabled={isLoading || !searchTerm.trim()}
+              className="btn-green-primary"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

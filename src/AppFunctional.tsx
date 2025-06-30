@@ -12,6 +12,7 @@ import { ProductoList } from './components/ProductoList'
 import { ProductoForm } from './components/ProductoForm'
 import { BuscarProducto } from './components/BuscarProducto'
 import { ThemeToggle } from './components/ThemeToggle'
+import { ThemedButton } from './components/ThemedButton'
 import { useProductos } from './hooks/useProductos'
 import { 
   Package, 
@@ -19,19 +20,25 @@ import {
   AlertTriangle,
   TrendingUp,
   Eye,
-  Search
+  Search,
+  Palette
 } from 'lucide-react'
 import { Toaster } from '@/components/ui/toaster'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 const queryClient = new QueryClient()
 
 // Componente interno que usa los hooks
 function AppContentWithData() {
   const [showForm, setShowForm] = useState(false)
+  const [showThemeConfig, setShowThemeConfig] = useState(false)
   const { data: productos = [], isLoading, error } = useProductos()
+  
+  // Color verde fijo
+  const currentColor = '#10b981' // Verde esmeralda
 
   // Estadísticas calculadas con TUS DATOS REALES
   const stats = useMemo(() => {
@@ -73,10 +80,10 @@ function AppContentWithData() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Package className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-pulse" />
-          <p className="text-lg text-gray-600">Cargando productos...</p>
+          <Package className="h-12 w-12 mx-auto mb-4 animate-pulse" style={{ color: currentColor }} />
+          <p className="text-lg text-muted-foreground">Cargando productos...</p>
         </div>
       </div>
     )
@@ -84,12 +91,12 @@ function AppContentWithData() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md mx-auto">
           <CardContent className="p-6 text-center">
             <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Error al cargar</h2>
-            <p className="text-gray-600 mb-4">No se pudieron cargar los productos</p>
+            <p className="text-muted-foreground mb-4">No se pudieron cargar los productos</p>
             <Button onClick={() => window.location.reload()}>
               Reintentar
             </Button>
@@ -100,18 +107,23 @@ function AppContentWithData() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-background border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
+              <div className="p-2 rounded-lg" style={{ backgroundColor: currentColor }}>
                 <Package className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Verificador de Precios</h1>
-                <p className="text-sm text-gray-500">{stats.total} productos registrados</p>
+                <h1 className="text-xl font-bold text-foreground">Verificador de Precios</h1>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-muted-foreground">{stats.total} productos registrados</p>
+                  <Badge variant="outline" className="text-xs">
+                    Tema: {currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1)}
+                  </Badge>
+                </div>
               </div>
             </div>
             
@@ -121,6 +133,32 @@ function AppContentWithData() {
                   ⚠️ {stats.stockBajo} con stock bajo
                 </Badge>
               )}
+              
+              {/* Botón Configurador de Temas */}
+              <Dialog open={showThemeConfig} onOpenChange={setShowThemeConfig}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Palette className="h-4 w-4" />
+                    Temas
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Palette className="h-5 w-5" />
+                      Configurador de Temas
+                    </DialogTitle>
+                  </DialogHeader>
+                  {/* <ThemeConfigurator 
+                    currentTheme={currentTheme} 
+                    onThemeChange={changeTheme}
+                  /> */}
+                  <div className="p-4 text-center">
+                    <p>Configurador temporalmente deshabilitado</p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              
               <ThemeToggle />
             </div>
           </div>
@@ -130,10 +168,10 @@ function AppContentWithData() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Estadísticas REALES */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-l-4 border-l-blue-500">
+          <Card className="border-l-4" style={{ borderLeftColor: currentColor }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Productos</CardTitle>
-              <Package className="h-4 w-4 text-blue-500" />
+              <Package className="h-4 w-4" style={{ color: currentColor }} />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.total}</div>
@@ -249,16 +287,18 @@ function AppContentWithData() {
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               <div className="lg:col-span-3">
-                <BuscarProducto />
+                <BuscarProducto themeColor={currentColor} />
               </div>
               <div>
-                <Button 
+                <ThemedButton 
                   onClick={() => setShowForm(!showForm)}
                   className="w-full"
+                  themeColor={currentColor}
+                  themeVariant="primary"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   {showForm ? 'Cancelar' : 'Nuevo Producto'}
-                </Button>
+                </ThemedButton>
               </div>
             </div>
           </CardContent>
@@ -273,7 +313,7 @@ function AppContentWithData() {
                   <CardTitle>Agregar Producto</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ProductoForm onSuccess={() => setShowForm(false)} />
+                  <ProductoForm onSuccess={() => setShowForm(false)} themeColor={currentColor} />
                 </CardContent>
               </Card>
             </div>

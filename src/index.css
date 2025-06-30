@@ -4,6 +4,11 @@
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  
+  /* Variables de color verde fijo */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
 }
 
 body {
@@ -27,6 +32,33 @@ body {
 
 .btn-primary:hover {
   background-color: #059669;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Clase especial para botones con color verde garantizado */
+.btn-green-primary {
+  background-color: #10b981 !important;
+  color: white !important;
+  border-color: #10b981 !important;
+  font-weight: 500;
+  transition: all 200ms;
+}
+
+.btn-green-primary:hover:not(:disabled) {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+  color: white !important;
+}
+
+.btn-green-primary:disabled {
+  background-color: #10b981 !important;
+  opacity: 0.5 !important;
+  border-color: #10b981 !important;
+  color: white !important;
 }
 
 .btn-primary:disabled {
