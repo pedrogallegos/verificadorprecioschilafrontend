@@ -12,7 +12,6 @@ import { ProductoList } from './components/ProductoList'
 import { ProductoForm } from './components/ProductoForm'
 import { BuscarProducto } from './components/BuscarProducto'
 import { ThemeToggle } from './components/ThemeToggle'
-import { ThemedButton } from './components/ThemedButton'
 import { useProductos } from './hooks/useProductos'
 import { 
   Package, 
@@ -121,7 +120,7 @@ function AppContentWithData() {
                 <div className="flex items-center gap-2">
                   <p className="text-sm text-muted-foreground">{stats.total} productos registrados</p>
                   <Badge variant="outline" className="text-xs">
-                    Tema: {currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1)}
+                    Sistema Simplificado
                   </Badge>
                 </div>
               </div>
@@ -287,18 +286,16 @@ function AppContentWithData() {
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               <div className="lg:col-span-3">
-                <BuscarProducto themeColor={currentColor} />
+                <BuscarProducto />
               </div>
               <div>
-                <ThemedButton 
+                <Button 
                   onClick={() => setShowForm(!showForm)}
-                  className="w-full"
-                  themeColor={currentColor}
-                  themeVariant="primary"
+                  className="w-full btn-green-primary"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   {showForm ? 'Cancelar' : 'Nuevo Producto'}
-                </ThemedButton>
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -313,7 +310,7 @@ function AppContentWithData() {
                   <CardTitle>Agregar Producto</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ProductoForm onSuccess={() => setShowForm(false)} themeColor={currentColor} />
+                  <ProductoForm onSuccess={() => setShowForm(false)} />
                 </CardContent>
               </Card>
             </div>
