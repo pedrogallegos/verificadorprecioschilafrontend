@@ -6,9 +6,13 @@
 
 import { useState } from 'react'
 import App from './App'
+import AppFunctional from './AppFunctional'
 import AppPOS from './AppPOS'
 import AppEcommerce from './AppEcommerce'
 import AppMinimal from './AppMinimal'
+import AppDashboard from './AppDashboard'
+import AppMobile from './AppMobile'
+import AppRetail from './AppRetail'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -17,7 +21,11 @@ import {
   Store, 
   ShoppingBag, 
   Minimize2,
-  Palette
+  Palette,
+  Sidebar,
+  Smartphone,
+  Package,
+  Zap
 } from 'lucide-react'
 
 const layouts = [
@@ -28,6 +36,39 @@ const layouts = [
     icon: LayoutDashboard,
     component: App,
     color: 'bg-blue-500'
+  },
+  {
+    id: 'functional',
+    name: '🔥 Funcional',
+    description: 'CON TUS DATOS REALES - Estadísticas calculadas',
+    icon: Zap,
+    component: AppFunctional,
+    color: 'bg-yellow-500',
+    featured: true
+  },
+  {
+    id: 'dashboard',
+    name: 'Dashboard Pro',
+    description: 'Admin panel con sidebar profesional',
+    icon: Sidebar,
+    component: AppDashboard,
+    color: 'bg-indigo-500'
+  },
+  {
+    id: 'mobile',
+    name: 'Mobile App',
+    description: 'Diseño tipo app móvil con tabs',
+    icon: Smartphone,
+    component: AppMobile,
+    color: 'bg-pink-500'
+  },
+  {
+    id: 'retail',
+    name: 'Retail Manager',
+    description: 'Especializado en gestión de inventario',
+    icon: Package,
+    component: AppRetail,
+    color: 'bg-orange-500'
   },
   {
     id: 'pos',
@@ -83,7 +124,7 @@ export default function LayoutSelector() {
         </div>
 
         {/* Layout Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
           {layouts.map((layout) => {
             const Icon = layout.icon
             const isSelected = selectedLayout === layout.id
@@ -91,15 +132,22 @@ export default function LayoutSelector() {
             return (
               <Card 
                 key={layout.id}
-                className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                className={`cursor-pointer transition-all duration-200 hover:shadow-lg relative ${
                   isSelected 
                     ? 'ring-2 ring-blue-500 shadow-lg transform scale-105' 
                     : 'hover:shadow-md'
-                }`}
+                } ${layout.featured ? 'ring-2 ring-yellow-400 shadow-md' : ''}`}
                 onClick={() => setSelectedLayout(layout.id)}
               >
+                {layout.featured && (
+                  <div className="absolute -top-2 -right-2 z-10">
+                    <Badge className="bg-yellow-500 text-yellow-900 animate-pulse">
+                      ¡RECOMENDADO!
+                    </Badge>
+                  </div>
+                )}
                 <CardHeader className="text-center pb-2">
-                  <div className={`w-12 h-12 ${layout.color} rounded-full flex items-center justify-center mx-auto mb-2`}>
+                  <div className={`w-12 h-12 ${layout.color} rounded-full flex items-center justify-center mx-auto mb-2 ${layout.featured ? 'animate-pulse' : ''}`}>
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-lg">{layout.name}</CardTitle>
@@ -110,7 +158,9 @@ export default function LayoutSelector() {
                   )}
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-sm text-gray-600">{layout.description}</p>
+                  <p className={`text-sm text-gray-600 ${layout.featured ? 'font-medium' : ''}`}>
+                    {layout.description}
+                  </p>
                 </CardContent>
               </Card>
             )
