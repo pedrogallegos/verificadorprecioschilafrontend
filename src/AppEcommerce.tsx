@@ -16,9 +16,7 @@ import {
   Package, 
   Plus, 
   Search, 
-  Menu,
   ShoppingBag,
-  Star,
   Filter,
   Grid3X3,
   List
