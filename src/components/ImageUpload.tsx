@@ -15,7 +15,7 @@
  */
 
 import { useState, useRef } from 'react'
-import { Upload, X, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react'
+import { Upload, X, Image as ImagePlaceholder, Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -252,7 +252,7 @@ export const ImageUpload = ({
             ) : (
               <div className="flex flex-col items-center">
                 <div className="bg-primary/10 p-4 rounded-full mb-4">
-                  <ImageIcon className="h-8 w-8 text-primary" />
+                  <ImagePlaceholder className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-medium mb-2">Agregar imagen del producto</h3>
                 <p className="text-sm text-muted-foreground mb-4">
