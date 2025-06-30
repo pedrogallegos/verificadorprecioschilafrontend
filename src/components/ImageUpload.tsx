@@ -177,6 +177,7 @@ export const ImageUpload = ({
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity rounded-lg flex items-center justify-center">
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
                   <Button
+                    type="button"
                     variant="secondary"
                     size="sm"
                     onClick={handleClick}
@@ -186,6 +187,7 @@ export const ImageUpload = ({
                     Cambiar
                   </Button>
                   <Button
+                    type="button"
                     variant="destructive"
                     size="sm"
                     onClick={handleRemoveImage}
