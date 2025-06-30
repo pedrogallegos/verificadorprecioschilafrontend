@@ -238,7 +238,11 @@ export const ProductoForm = ({ producto, onSuccess, onCancel }: ProductoFormProp
                   Cancelar
                 </Button>
               )}
-              <Button type="submit" disabled={isSubmitting}>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="btn-green-primary"
+              >
                 <Save className="h-4 w-4 mr-2" />
                 {isSubmitting ? 'Guardando...' : 'Guardar'}
               </Button>
