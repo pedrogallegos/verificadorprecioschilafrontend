@@ -7,11 +7,9 @@
 import { useState } from 'react'
 import { useProductos, useDeleteProducto } from '../hooks/useProductos'
 import { ProductoForm } from './ProductoForm'
-import { ProductImage } from './ProductImage'
 import { 
   Edit, 
   Trash2, 
-  ShoppingCart, 
   AlertCircle, 
   Eye,
   Package,
@@ -20,7 +18,7 @@ import {
 } from 'lucide-react'
 import type { Producto } from '../types'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
