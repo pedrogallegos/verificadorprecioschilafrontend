@@ -1,10 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import AppPOS from './AppPOS.tsx'
+import AppEcommerce from './AppEcommerce.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AppPOS />
+    <AppEcommerce />
   </StrictMode>,
 )
