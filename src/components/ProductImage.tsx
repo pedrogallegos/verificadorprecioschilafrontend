@@ -1,14 +1,14 @@
 /**
  * ============================================
- * COMPONENTE PRODUCT IMAGE - DISPLAY CON MEJORAS
+ * COMPONENTE PRODUCT IMAGE - RECONSTRUIDO
  * ============================================
  * 
- * Componente mejorado para mostrar imágenes de productos con:
+ * Componente para mostrar imágenes de productos con:
  * - Lazy loading optimizado
- * - Estados de carga y error mejorados
+ * - Estados de carga y error
  * - Animaciones suaves
  * - Mejor accesibilidad
- * - Sin imports no utilizados
+ * - Código completamente limpio
  */
 
 import { useState } from 'react'
@@ -21,9 +21,9 @@ interface ProductImageProps {
   className?: string
   showModal?: boolean
   size?: 'small' | 'medium' | 'large'
-  priority?: boolean // Para imágenes importantes que deben cargar primero
-  onLoad?: () => void // Callback cuando la imagen carga
-  onError?: () => void // Callback cuando hay error
+  priority?: boolean
+  onLoad?: () => void
+  onError?: () => void
 }
 
 export const ProductImage = ({ 
@@ -49,12 +49,12 @@ export const ProductImage = ({
   const handleImageError = () => {
     setImageError(true)
     setIsLoading(false)
-    onError?.() // Llamar callback si existe
+    onError?.()
   }
 
   const handleImageLoad = () => {
     setIsLoading(false)
-    onLoad?.() // Llamar callback si existe
+    onLoad?.()
   }
 
   const handleImageClick = () => {
@@ -63,7 +63,7 @@ export const ProductImage = ({
     }
   }
 
-  // Si no hay imagen o hay error, mostrar placeholder mejorado
+  // Placeholder cuando no hay imagen o hay error
   if (!src || imageError) {
     return (
       <div className={`${sizeClasses[size]} ${className} bg-muted rounded-lg flex flex-col items-center justify-center border border-border transition-all duration-200 hover:bg-muted/80`}>
@@ -96,7 +96,7 @@ export const ProductImage = ({
         />
       </div>
 
-      {/* Modal para imagen completa con título */}
+      {/* Modal para imagen completa */}
       {showModal && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="max-w-4xl p-2">
